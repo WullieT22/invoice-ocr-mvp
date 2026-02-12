@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice OCR MVP</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Invoice OCR MVP</h1>
+
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <label>Select invoices (PDF, Image, Word, Excel):</label><br>
+        <input type="file" name="files" multiple required>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        {% for r in results %}
+            <div class="result">
+                <h3>{{ r.filename }}</h3>
+                <pre>{{ r.data }}</pre>
+                <p><b>Match:</b> {{ r.match.message }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
