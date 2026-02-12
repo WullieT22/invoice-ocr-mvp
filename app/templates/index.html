@@ -5,34 +5,83 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>Invoice OCR MVP</h1>
-
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label>Select invoices (PDF, Image, Word, Excel):</label><br>
-        <input type="file" name="files" multiple required>
-        <button type="submit">Upload</button>
-    </form>
+    <header class="page-header">
+        <div>
+            <h1>Invoice OCR MVP</h1>
+            <p class="subtitle">Upload invoices, extract fields, and match to POs.</p>
+        </div>
+        <form class="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <label>Select invoices (PDF, Image, Word, Excel)</label>
+            <div class="upload-row">
+                <input type="file" name="files" multiple required>
+                <button type="submit">Upload</button>
+            </div>
+        </form>
+    </header>
 
     {% if results %}
-        <h2>Results</h2>
-        {% for r in results %}
-            <div class="result">
-                <h3>{{ r.filename }}</h3>
-                <div class="summary">
-                    <p><b>Invoice #:</b> {{ r.data.invoice_number or "-" }}</p>
-                    <p><b>PO #:</b> {{ r.data.po_number or "-" }}</p>
-                    <p><b>Vendor:</b> {{ r.data.vendor_name or "-" }}</p>
-                    <p><b>Total:</b> {{ r.data.total or "-" }} {{ r.data.currency or "" }}</p>
-                    <p><b>Invoice Date:</b> {{ r.data.invoice_date or "-" }}</p>
-                </div>
-                <p><b>Match Status:</b> {{ r.match.status }} ({{ r.match.confidence }})</p>
-                <p><b>Match Message:</b> {{ r.match.message }}</p>
-                <details>
-                    <summary>Raw Extracted Data</summary>
-                    <pre>{{ r.data }}</pre>
-                </details>
-            </div>
-        {% endfor %}
+        <section class="results">
+            {% for r in results %}
+                <article class="result-card">
+                    <div class="result-header">
+                        <h2>{{ r.filename }}</h2>
+                        <span class="badge {{ r.match.status }}">{{ r.match.status }}</span>
+                    </div>
+                    <div class="rows-layout">
+                        <div class="row">
+                            <div class="panel invoice-panel">
+                                <h3>Invoice (Preview)</h3>
+                                <div class="invoice-preview">
+                                    <div class="invoice-field highlight">
+                                        <span>Invoice #</span>
+                                        <strong>{{ r.data.invoice_number or "-" }}</strong>
+                                    </div>
+                                    <div class="invoice-field highlight">
+                                        <span>PO #</span>
+                                        <strong>{{ r.data.po_number or "-" }}</strong>
+                                    </div>
+                                    <div class="invoice-field highlight">
+                                        <span>Vendor</span>
+                                        <strong>{{ r.data.vendor_name or "-" }}</strong>
+                                    </div>
+                                    <div class="invoice-field highlight">
+                                        <span>Total</span>
+                                        <strong>{{ r.data.total or "-" }} {{ r.data.currency or "" }}</strong>
+                                    </div>
+                                    <div class="invoice-field">
+                                        <span>Invoice Date</span>
+                                        <strong>{{ r.data.invoice_date or "-" }}</strong>
+                                    </div>
+                                    <div class="invoice-field">
+                                        <span>Due Date</span>
+                                        <strong>{{ r.data.due_date or "-" }}</strong>
+                                    </div>
+                                </div>
+                                <div class="preview-note">Highlighted boxes represent extracted fields.</div>
+                            </div>
+                            <div class="panel po-panel">
+                                <h3>PO Match Details</h3>
+                                <div class="po-summary">
+                                    <p><b>Match Message:</b> {{ r.match.message }}</p>
+                                    <p><b>Confidence:</b> {{ r.match.confidence }}</p>
+                                    {% if r.match.po_record %}
+                                        <div class="po-record">
+                                            <h4>PO Record</h4>
+                                            <p><b>Vendor:</b> {{ r.match.po_record.vendor_name }}</p>
+                                            <p><b>Total:</b> {{ r.match.po_record.total }}</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <details>
+                                    <summary>Raw Extracted Data</summary>
+                                    <pre>{{ r.data }}</pre>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
     {% endif %}
 </body>
 </html>
