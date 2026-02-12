@@ -18,8 +18,19 @@
         {% for r in results %}
             <div class="result">
                 <h3>{{ r.filename }}</h3>
-                <pre>{{ r.data }}</pre>
-                <p><b>Match:</b> {{ r.match.message }}</p>
+                <div class="summary">
+                    <p><b>Invoice #:</b> {{ r.data.invoice_number or "-" }}</p>
+                    <p><b>PO #:</b> {{ r.data.po_number or "-" }}</p>
+                    <p><b>Vendor:</b> {{ r.data.vendor_name or "-" }}</p>
+                    <p><b>Total:</b> {{ r.data.total or "-" }} {{ r.data.currency or "" }}</p>
+                    <p><b>Invoice Date:</b> {{ r.data.invoice_date or "-" }}</p>
+                </div>
+                <p><b>Match Status:</b> {{ r.match.status }} ({{ r.match.confidence }})</p>
+                <p><b>Match Message:</b> {{ r.match.message }}</p>
+                <details>
+                    <summary>Raw Extracted Data</summary>
+                    <pre>{{ r.data }}</pre>
+                </details>
             </div>
         {% endfor %}
     {% endif %}

@@ -5,6 +5,8 @@ from docx import Document
 from PIL import Image
 import pytesseract
 
+from services.ai_extractor import extract_invoice_fields
+
 async def extract_invoice_data(file):
     filename = file.filename.lower()
     content = await file.read()
@@ -28,12 +30,8 @@ async def extract_invoice_data(file):
         df = pd.read_excel(io.BytesIO(content))
         text = df.to_string(index=False)
 
-    # TODO: Replace with AI extraction later
+    extracted = extract_invoice_fields(text)
     return {
-        "raw_text": text[:2000],  # preview only
-        "po_number": None,
-        "client_number": None,
-        "line_items": [],
-        "totals": None,
-        "tax": None
+        "raw_text": text[:2000],
+        **extracted,
     }
