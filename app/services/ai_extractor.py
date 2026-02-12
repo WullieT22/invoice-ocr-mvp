@@ -55,7 +55,7 @@ def extract_invoice_fields(text: str) -> dict[str, Any]:
         "line_items": line_items,
     }
 
-    extracted["extraction_confidence"] = _estimate_confidence(extracted)
+    extracted["extraction_confidence"] = estimate_extraction_confidence(extracted)
     return extracted
 
 
@@ -159,7 +159,7 @@ def _extract_line_items(text: str) -> list[dict[str, Any]]:
     return items
 
 
-def _estimate_confidence(extracted: dict[str, Any]) -> float:
+def estimate_extraction_confidence(extracted: dict[str, Any]) -> float:
     key_fields = [
         extracted.get("invoice_number"),
         extracted.get("po_number"),
